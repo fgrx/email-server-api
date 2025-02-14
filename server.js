@@ -13,10 +13,10 @@ app.get("/", (req, res) => {
 
 app.post("/add-contact", async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { email } = req.body;
 
-    if (!name || !email) {
-      return res.status(400).json({ error: "Name and email are required" });
+    if (!email) {
+      return res.status(400).json({ error: "email required" });
     }
 
     const response = await fetch("https://api.getresponse.com/v3/contacts", {
@@ -26,7 +26,6 @@ app.post("/add-contact", async (req, res) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name,
         email,
         campaign: {
           campaignId: CAMPAIGN_ID,
