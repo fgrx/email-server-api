@@ -4,8 +4,26 @@ require("dotenv").config();
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
+
+const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(",");
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 app.use(express.json());
+app.options("*", cors());
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", process.env.CORS_ALLOWED_ORIGIN);
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  next();
+});
 
 const API_KEY = process.env.GETRESPONSE_API_KEY;
 const CAMPAIGN_ID = process.env.GETRESPONSE_LIST_ID;
@@ -16,10 +34,10 @@ app.get("/", (req, res) => {
 
 app.post("/add-contact", async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, name } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ error: "email required" });
+    if (!email || !name) {
+      return res.status(400).json({ error: "email and name are required" });
     }
 
     const response = await fetch("https://api.getresponse.com/v3/contacts", {
@@ -30,6 +48,7 @@ app.post("/add-contact", async (req, res) => {
       },
       body: JSON.stringify({
         email,
+        name,
         campaign: {
           campaignId: CAMPAIGN_ID,
         },

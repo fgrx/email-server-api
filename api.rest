@@ -1,0 +1,16 @@
+post http://localhost:3010/add-contact
+Content-Type: application/json
+
+{
+    "email":"testtesttestfab@free.fr",
+    "name":"testfabfab"
+}
+
+###
+post https://email-server-api-production.up.railway.app/add-contact
+Content-Type: application/json
+
+{
+    "email":"testtesttestfabdss@free.fr",
+    "name":"testfabfadsdsb"
+}
