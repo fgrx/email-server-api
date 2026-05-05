@@ -3,7 +3,8 @@ Content-Type: application/json
 
 {
     "email":"testtesttestfab@free.fr",
-    "name":"testfabfab"
+    "name":"testfabfab",
+    "campaignId":"Cd9Vu"
 }
 
 ###
@@ -11,6 +12,7 @@ post https://email-server-api-production.up.railway.app/add-contact
 Content-Type: application/json
 
 {
-    "email":"testtesttestfabdss@free.fr",
-    "name":"testfabfadsdsb"
+    "email":"testapi2@free.fr",
+    "name":"testfabfadsdsb",
+    "campaignId":"HafBK"
 }

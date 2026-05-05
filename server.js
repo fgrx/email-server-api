@@ -14,7 +14,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
     optionsSuccessStatus: 200,
-  })
+  }),
 );
 app.use(express.json());
 app.options("*", cors());
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 const API_KEY = process.env.GETRESPONSE_API_KEY;
-const CAMPAIGN_ID = process.env.GETRESPONSE_LIST_ID;
+const DEFAULT_CAMPAIGN_ID = process.env.GETRESPONSE_LIST_ID;
 
 app.get("/", (req, res) => {
   res.send("hello");
@@ -34,11 +34,19 @@ app.get("/", (req, res) => {
 
 app.post("/add-contact", async (req, res) => {
   try {
-    const { email, name } = req.body;
+    const { email, name, campaignId } = req.body;
 
     if (!email || !name) {
       return res.status(400).json({ error: "email and name are required" });
     }
+
+    const body = {
+      email,
+      name,
+      campaign: {
+        campaignId: campaignId || DEFAULT_CAMPAIGN_ID,
+      },
+    };
 
     const response = await fetch("https://api.getresponse.com/v3/contacts", {
       method: "POST",
@@ -46,13 +54,7 @@ app.post("/add-contact", async (req, res) => {
         "X-Auth-Token": `api-key ${API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email,
-        name,
-        campaign: {
-          campaignId: CAMPAIGN_ID,
-        },
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
