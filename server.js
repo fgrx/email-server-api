@@ -48,13 +48,16 @@ app.post("/add-contact", async (req, res) => {
       },
     };
 
+    const bodyJSON = JSON.stringify(body);
+    console.log({ bodyJSON });
+
     const response = await fetch("https://api.getresponse.com/v3/contacts", {
       method: "POST",
       headers: {
         "X-Auth-Token": `api-key ${API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: bodyJSON,
     });
 
     if (!response.ok) {
@@ -62,8 +65,10 @@ app.post("/add-contact", async (req, res) => {
       throw new Error(`API error: ${errorData.message}`);
     }
 
-    const data = await response.json();
-    res.status(201).json(data);
+    res.status(201).json({
+      status: "contact added",
+      message: "Contact créé avec succès",
+    });
   } catch (error) {
     console.error("Error adding contact:", error.message);
     res.status(500).json({

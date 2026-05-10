@@ -2,7 +2,7 @@ post http://localhost:3010/add-contact
 Content-Type: application/json
 
 {
-    "email":"testtesttestfab@free.fr",
+    "email":"testtesttestfab10@free.fr",
     "name":"testfabfab",
     "campaignId":"Cd9Vu"
 }
@@ -14,5 +14,5 @@ Content-Type: application/json
 {
     "email":"testapi2@free.fr",
     "name":"testfabfadsdsb",
-    "campaignId":"HafBK"
+    "campaignId":"qD1uT"
 }
