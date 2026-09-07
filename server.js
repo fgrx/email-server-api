@@ -5,7 +5,13 @@ const cors = require("cors");
 
 const app = express();
 
-const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(",");
+const allowedOrigins = (
+  process.env.CORS_ALLOWED_ORIGINS ||
+  "https://www.latelierpsy.com,https://latelierpsy.com,http://localhost:3000"
+)
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 app.use(
   cors({
@@ -17,13 +23,6 @@ app.use(
   }),
 );
 app.use(express.json());
-app.options("*", cors());
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", process.env.CORS_ALLOWED_ORIGIN);
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  next();
-});
 
 const API_KEY = process.env.GETRESPONSE_API_KEY;
 const DEFAULT_CAMPAIGN_ID = process.env.GETRESPONSE_LIST_ID;
