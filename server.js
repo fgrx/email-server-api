@@ -5,13 +5,14 @@ const cors = require("cors");
 
 const app = express();
 
-const allowedOrigins = (
-  process.env.CORS_ALLOWED_ORIGINS ||
-  "https://www.latelierpsy.com,https://latelierpsy.com,http://localhost:3000"
-)
-  .split(",")
-  .map((origin) => origin.trim().replace(/^["']|["']$/g, "").replace(/\/+$/, ""))
-  .filter(Boolean);
+const allowedOrigins = [
+  "https://www.latelierpsy.com",
+  "https://latelierpsy.com",
+  ...((process.env.CORS_ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim().replace(/^["']|["']$/g, "").replace(/\/+$/, ""))
+    .filter(Boolean)),
+];
 
 app.use(
   cors({
