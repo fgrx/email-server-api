@@ -10,7 +10,7 @@ const allowedOrigins = (
   "https://www.latelierpsy.com,https://latelierpsy.com,http://localhost:3000"
 )
   .split(",")
-  .map((origin) => origin.trim())
+  .map((origin) => origin.trim().replace(/^["']|["']$/g, "").replace(/\/+$/, ""))
   .filter(Boolean);
 
 app.use(
