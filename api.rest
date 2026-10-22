@@ -16,3 +16,14 @@ Content-Type: application/json
     "name":"testfabfadsdsb",
     "campaignId":"qD1uT"
 }
+
+###
+post http://localhost:3010/api/lead-magnet-send
+Content-Type: application/json
+x-api-key: FIkgn485148FI@iv-ZIO454
+
+{
+    "email":"testtesttestfab10@free.fr",
+    "fileUrl":"https://www.latelierpsy.com/files/ebook.pdf",
+    "fileName":"ebook.pdf"
+}

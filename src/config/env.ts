@@ -10,4 +10,15 @@ export const env = {
     defaultCampaignId: process.env.GETRESPONSE_LIST_ID,
     baseUrl: "https://api.getresponse.com/v3",
   },
+  brevo: {
+    apiKey: process.env.BREVO_API_KEY,
+    baseUrl: "https://api.brevo.com/v3",
+    sender: {
+      email: "contact@latelierpsy.com",
+      name: "L'Atelier Psy",
+    },
+  },
+  protection: {
+    apiKey: process.env.PROTECTION_API_KEY,
+  },
 } as const;
