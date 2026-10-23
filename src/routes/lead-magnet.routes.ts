@@ -1,6 +1,6 @@
-import { Router, Request, Response, NextFunction } from "express";
-import { env } from "../config/env";
+import { Router, Request, Response } from "express";
 import { LeadMagnetService } from "../services/lead-magnet/lead-magnet.types";
+import { requireApiKey } from "./require-api-key";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -13,43 +13,23 @@ function isValidHttpUrl(value: string): boolean {
   }
 }
 
-export function createLeadMagnetRouter(
-  leadMagnetService: LeadMagnetService,
-): Router {
+export function createLeadMagnetRouter(leadMagnetService: LeadMagnetService): Router {
   const router = Router();
-
-  const requireApiKey = (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): void => {
-    const apiKey = env.protection.apiKey;
-
-    if (!apiKey) {
-      res.status(500).json({ error: "PROTECTION_API_KEY is not configured" });
-      return;
-    }
-
-    const providedKey = req.header("x-api-key");
-
-    if (providedKey !== apiKey) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-
-    next();
-  };
 
   router.post(
     "/lead-magnet-send",
     requireApiKey,
     async (req: Request, res: Response) => {
       try {
-        const { email, fileUrl, fileName } = req.body as {
-          email?: string;
-          fileUrl?: string;
-          fileName?: string;
-        };
+        const { email, fileUrl, fileName, fileTitle, name, listId } =
+          req.body as {
+            email?: string;
+            fileUrl?: string;
+            fileName?: string;
+            fileTitle?: string;
+            name?: string;
+            listId?: string;
+          };
 
         if (!email || !fileUrl || !fileName) {
           return res.status(400).json({
@@ -69,6 +49,9 @@ export function createLeadMagnetRouter(
           email,
           fileUrl,
           fileName,
+          fileTitle,
+          name,
+          listId,
         });
 
         return res.status(200).json(result);

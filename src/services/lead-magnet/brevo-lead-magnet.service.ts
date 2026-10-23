@@ -27,6 +27,11 @@ export class BrevoLeadMagnetService implements LeadMagnetService {
     if (!apiKey) {
       throw new Error("BREVO_API_KEY is not configured");
     }
+    if (apiKey.startsWith("xsmtpsib-")) {
+      throw new Error(
+        "BREVO_API_KEY is an SMTP key (xsmtpsib-). Use an API v3 key (xkeysib-) from https://app.brevo.com/settings/keys/api",
+      );
+    }
     this.apiKey = apiKey;
     this.baseUrl = env.brevo.baseUrl;
   }
@@ -34,6 +39,9 @@ export class BrevoLeadMagnetService implements LeadMagnetService {
   async sendLeadMagnet(
     input: LeadMagnetSendInput,
   ): Promise<LeadMagnetSendResult> {
+    const fileTitle = input.fileTitle?.trim() || input.fileName;
+    const downloadUrl = buildDownloadPageUrl(input);
+
     const body: BrevoEmailRequestBody = {
       sender: {
         name: env.brevo.sender.name,
@@ -41,7 +49,11 @@ export class BrevoLeadMagnetService implements LeadMagnetService {
       },
       to: [{ email: input.email }],
       subject: `Votre fichier ${input.fileName}`,
-      htmlContent: buildLeadMagnetEmailHtml(input.fileUrl, input.fileName),
+      htmlContent: buildLeadMagnetEmailHtml(
+        downloadUrl,
+        fileTitle,
+        env.brevo.sender.name,
+      ),
     };
 
     const response = await fetch(`${this.baseUrl}/smtp/email`, {
@@ -84,8 +96,33 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function buildLeadMagnetEmailHtml(fileUrl: string, fileName: string): string {
-  const safeFileName = escapeHtml(fileName);
+function buildDownloadPageUrl(input: LeadMagnetSendInput): string {
+  const fileUrl = new URL(input.fileUrl);
+  const params = new URLSearchParams();
+  params.set("email", input.email);
+
+  const listId = input.listId?.trim() || env.getresponse.defaultCampaignId;
+  if (listId) {
+    params.set("list", listId);
+  }
+
+  params.set("file", fileUrl.pathname);
+
+  const name = input.name?.trim();
+  if (name) {
+    params.set("name", name);
+  }
+
+  return `${fileUrl.origin}/download/?${params.toString()}`;
+}
+
+function buildLeadMagnetEmailHtml(
+  downloadUrl: string,
+  fileTitle: string,
+  senderName: string,
+): string {
+  const safeFileTitle = escapeHtml(fileTitle);
+  const safeDownloadUrl = escapeHtml(downloadUrl);
   return `<!DOCTYPE html>
 <html lang="fr">
   <body style="margin: 0; padding: 0; background-color: #f4f4f7; font-family: Arial, Helvetica, sans-serif;">
@@ -103,16 +140,17 @@ function buildLeadMagnetEmailHtml(fileUrl: string, fileName: string): string {
                 <p style="margin: 0 0 16px 0;">Bonjour,</p>
                 <p style="margin: 0 0 16px 0;">
                   Merci pour votre intérêt. Vous pouvez dès à présent télécharger votre document&nbsp;:
-                  <strong>${safeFileName}</strong>.
+                  <strong>${safeFileTitle}</strong>.
                 </p>
-                <p style="margin: 0;">Bonne lecture&nbsp;!</p>
+                <p style="margin: 0;">Bien à vous,</p>
+                <p style="margin: 8px 0 0 0;">${escapeHtml(senderName)}</p>
               </td>
             </tr>
             <tr>
               <td align="center" style="padding-bottom: 32px;">
-                <a href="${fileUrl}"
+                <a href="${safeDownloadUrl}"
                   style="display: inline-block; background-color: #4f46e5; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: bold; padding: 14px 32px; border-radius: 6px;">
-                  Télécharger ${safeFileName}
+                  Télécharger ${safeFileTitle}
                 </a>
               </td>
             </tr>
@@ -122,7 +160,7 @@ function buildLeadMagnetEmailHtml(fileUrl: string, fileName: string): string {
                   Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur&nbsp;:
                 </p>
                 <p style="margin: 0; word-break: break-all;">
-                  <a href="${fileUrl}" style="color: #4f46e5;">${fileUrl}</a>
+                  <a href="${safeDownloadUrl}" style="color: #4f46e5;">${safeDownloadUrl}</a>
                 </p>
               </td>
             </tr>

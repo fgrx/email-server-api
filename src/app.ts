@@ -3,6 +3,7 @@ import cors from "cors";
 import { env } from "./config/env";
 import { createContactRouter } from "./routes/contact.routes";
 import { createLeadMagnetRouter } from "./routes/lead-magnet.routes";
+import { createSubscribeRouter } from "./routes/subscribe.routes";
 import { GetResponseService } from "./services/email/getresponse.service";
 import { BrevoLeadMagnetService } from "./services/lead-magnet/brevo-lead-magnet.service";
 import { EmailMarketingService } from "./services/email/email-marketing.types";
@@ -49,6 +50,10 @@ export function createApp(
 
   for (const service of emailServices) {
     app.use("/api", createContactRouter(service));
+  }
+
+  if (emailServices[0]) {
+    app.use("/api", createSubscribeRouter(emailServices[0]));
   }
 
   if (leadMagnetService) {

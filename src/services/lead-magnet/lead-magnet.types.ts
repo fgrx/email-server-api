@@ -2,6 +2,9 @@ export interface LeadMagnetSendInput {
   email: string;
   fileUrl: string;
   fileName: string;
+  fileTitle?: string;
+  name?: string;
+  listId?: string;
 }
 
 export interface LeadMagnetSendResult {
