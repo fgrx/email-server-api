@@ -36,7 +36,7 @@ export function createApp(
     cors({
       origin: getAllowedOrigins(),
       methods: ["GET", "POST", "PUT", "DELETE"],
-      allowedHeaders: ["Content-Type", "Authorization"],
+      allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
       credentials: true,
       optionsSuccessStatus: 200,
     }),

@@ -4,7 +4,7 @@ dotenv.config();
 
 export const env = {
   port: Number(process.env.PORT) || 3000,
-  corsAllowedOrigins: process.env.CORS_ALLOWED_ORIGINS || "",
+  corsAllowedOrigins: process.env.CORS_ALLOWED_ORIGINS || "http://localhost:4321",
   getresponse: {
     apiKey: process.env.GETRESPONSE_API_KEY,
     defaultCampaignId: process.env.GETRESPONSE_LIST_ID,
