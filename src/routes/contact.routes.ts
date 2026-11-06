@@ -1,5 +1,20 @@
 import { Router, Request, Response } from "express";
+import { env } from "../config/env";
 import { EmailMarketingService } from "../services/email/email-marketing.types";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SUPERVISION_ALIAS = "supervisions";
+
+function resolveCampaignId(rawCampaignId: unknown): string | undefined {
+  const value = typeof rawCampaignId === "string" ? rawCampaignId.trim() : "";
+  if (!value) {
+    return undefined;
+  }
+  if (value === SUPERVISION_ALIAS) {
+    return env.getresponse.supervisionListId;
+  }
+  return value;
+}
 
 export function createContactRouter(
   emailService: EmailMarketingService,
@@ -8,10 +23,9 @@ export function createContactRouter(
 
   router.post("/add-contact", async (req: Request, res: Response) => {
     try {
-      const { email, name, campaignId } = req.body as {
+      const { email, name } = req.body as {
         email?: string;
         name?: string;
-        campaignId?: string;
       };
 
       if (!email || !name) {
@@ -19,6 +33,14 @@ export function createContactRouter(
           .status(400)
           .json({ error: "email and name are required" });
       }
+
+      if (!EMAIL_REGEX.test(email)) {
+        return res.status(400).json({ error: "Invalid email" });
+      }
+
+      const campaignId = resolveCampaignId(
+        req.body?.campaignId ?? req.body?.campaignid,
+      );
 
       const result = await emailService.addContact({ email, name, campaignId });
 

@@ -8,6 +8,7 @@ export const env = {
   getresponse: {
     apiKey: process.env.GETRESPONSE_API_KEY,
     defaultCampaignId: process.env.GETRESPONSE_LIST_ID,
+    supervisionListId: process.env.GETRESPONSE_SUPERVISION_LIST_ID,
     baseUrl: "https://api.getresponse.com/v3",
   },
   brevo: {

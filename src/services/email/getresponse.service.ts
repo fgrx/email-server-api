@@ -50,8 +50,15 @@ export class GetResponseService implements EmailMarketingService {
     });
 
     if (!response.ok) {
-      const errorData = (await response.json()) as { message?: string };
-      throw new Error(`GetResponse API error: ${errorData.message}`);
+      const text = await response.text();
+      let message = text;
+      try {
+        const errorData = JSON.parse(text) as { message?: string };
+        message = errorData.message || text;
+      } catch {
+        message = text;
+      }
+      throw new Error(`GetResponse API error: ${message}`);
     }
 
     return {
