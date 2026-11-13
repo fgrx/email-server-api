@@ -23,9 +23,10 @@ export function createContactRouter(
 
   router.post("/add-contact", async (req: Request, res: Response) => {
     try {
-      const { email, name } = req.body as {
+      const { email, name, tag } = req.body as {
         email?: string;
         name?: string;
+        tag?: string;
       };
 
       if (!email || !name) {
@@ -42,7 +43,12 @@ export function createContactRouter(
         req.body?.campaignId ?? req.body?.campaignid,
       );
 
-      const result = await emailService.addContact({ email, name, campaignId });
+      const result = await emailService.addContact({
+        email,
+        name,
+        campaignId,
+        tag: tag?.trim() || undefined,
+      });
 
       return res.status(201).json(result);
     } catch (error) {

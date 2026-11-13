@@ -15,10 +15,11 @@ export function createSubscribeRouter(
     requireApiKey,
     async (req: Request, res: Response) => {
       try {
-        const { email, name, listId } = req.body as {
+        const { email, name, listId, tag } = req.body as {
           email?: string;
           name?: string;
           listId?: string;
+          tag?: string;
         };
 
         if (!email) {
@@ -33,6 +34,7 @@ export function createSubscribeRouter(
           email,
           name: name?.trim() || email.split("@")[0],
           campaignId: listId || env.getresponse.defaultCampaignId,
+          tag: tag?.trim() || undefined,
         });
 
         return res.status(201).json(result);

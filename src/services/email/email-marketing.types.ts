@@ -2,6 +2,7 @@ export interface AddContactInput {
   email: string;
   name: string;
   campaignId?: string;
+  tag?: string;
 }
 
 export interface AddContactResult {
